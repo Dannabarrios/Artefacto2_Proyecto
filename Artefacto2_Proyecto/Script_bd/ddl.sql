@@ -227,3 +227,12 @@ CREATE TABLE RecuperacionCuenta (
     intentos INT DEFAULT 0,
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
 );
+
+CREATE TABLE Configuracion_Idioma (
+    idConfigIdioma INT AUTO_INCREMENT PRIMARY KEY,
+    idiomaDetectado VARCHAR(50) NOT NULL,       
+    fuenteDeteccion VARCHAR(100) DEFAULT 'Navegador', 
+    fechaDeteccion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    comentario VARCHAR(255)          
+);
+
