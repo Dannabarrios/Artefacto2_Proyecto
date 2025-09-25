@@ -131,3 +131,9 @@ INSERT INTO RecuperacionCuenta (UsuarioID, codigo, estado, intentos) VALUES
 (2,'ABC222','Activo',0),
 (3,'ABC333','Activo',0),
 (4,'ABC444','Activo',0);
+
+INSERT INTO Configuracion_Idioma (idiomaDetectado, fuenteDeteccion, comentario) VALUES
+('es-ES','Navegador','Configuracion inicial'),
+('en-US','Geolocalizacion','Configuracion inicial'),
+('fr-FR','Navegador','Configuracion inicial'),
+('de-DE','Geolocalizacion','Configuracion inicial');
