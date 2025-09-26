@@ -136,4 +136,8 @@ INSERT INTO Configuracion_Idioma (idiomaDetectado, fuenteDeteccion, comentario) 
 ('es-ES','Navegador','Configuracion inicial'),
 ('en-US','Geolocalizacion','Configuracion inicial'),
 ('fr-FR','Navegador','Configuracion inicial'),
+<<<<<<< HEAD
 ('de-DE','Geolocalizacion','Configuracion inicial');
+=======
+('de-DE','Geolocalizacion','Configuracion inicial');
+>>>>>>> 31fcf068009ce21465b9c53dffc434e735cc9da0
