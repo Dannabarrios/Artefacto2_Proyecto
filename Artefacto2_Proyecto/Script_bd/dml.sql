@@ -1,6 +1,6 @@
 USE Renta_Movil;
 
-INSERT INTO Usuarios (NombreUsuario, Contraseña, EstadoUsuario, TipoAutenticacion) VALUES
+INSERT INTO Usuarios (NombreUsuario, Contrasena, EstadoUsuario, TipoAutenticacion) VALUES
 ('laura', 'pass123', TRUE, 'Local'),
 ('vanessa', 'pass234', TRUE, 'Local'),
 ('danna', 'pass345', TRUE, 'Google'),
@@ -48,7 +48,7 @@ INSERT INTO Log_Errores (UsuarioID, TipoError, Descripcion, IP_Origen) VALUES
 (3,'Aplicacion','Error de aplicacion','192.168.1.3'),
 (4,'Autenticacion','Error de login','192.168.1.4');
 
-INSERT INTO Politicas_Contraseñas (MinLongitud, MaxLongitud, RequiereMayusculas, RequiereNumeros, RequiereSimbolos, CaducidadDias) VALUES
+INSERT INTO Politicas_Contrasenas (MinLongitud, MaxLongitud, RequiereMayusculas, RequiereNumeros, RequiereSimbolos, CaducidadDias) VALUES
 (8,20,TRUE,TRUE,TRUE,90),
 (10,25,TRUE,TRUE,FALSE,120),
 (12,30,TRUE,FALSE,TRUE,180),
@@ -136,8 +136,4 @@ INSERT INTO Configuracion_Idioma (idiomaDetectado, fuenteDeteccion, comentario) 
 ('es-ES','Navegador','Configuracion inicial'),
 ('en-US','Geolocalizacion','Configuracion inicial'),
 ('fr-FR','Navegador','Configuracion inicial'),
-<<<<<<< HEAD
 ('de-DE','Geolocalizacion','Configuracion inicial');
-=======
-('de-DE','Geolocalizacion','Configuracion inicial');
->>>>>>> 31fcf068009ce21465b9c53dffc434e735cc9da0
