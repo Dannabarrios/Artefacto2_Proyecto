@@ -40,7 +40,7 @@ INSERT INTO Sesion_Usuario (UsuarioID, FechaFin, IP_Origen, EstadoSesion) VALUES
 (1,NULL,'192.168.1.1','Activo'),
 (2,NULL,'192.168.1.2','Activo'),
 (3,NULL,'192.168.1.3','Activo'),
-(4,NULL,'192.168.1.4','Activo');
+(4,'2025-09-27 20:00:00','192.168.1.4','Cerrado');
 
 INSERT INTO Log_Errores (UsuarioID, TipoError, Descripcion, IP_Origen) VALUES
 (1,'SQL','Error de consulta','192.168.1.1'),
@@ -137,3 +137,9 @@ INSERT INTO Configuracion_Idioma (idiomaDetectado, fuenteDeteccion, comentario) 
 ('en-US','Geolocalizacion','Configuracion inicial'),
 ('fr-FR','Navegador','Configuracion inicial'),
 ('de-DE','Geolocalizacion','Configuracion inicial');
+
+INSERT INTO TokenAcceso (UsuarioID, token, fechaExpiracion, estado) VALUES
+(1,'tok_admin_001','2025-10-01 23:59:59','Activo'),
+(2,'tok_empleado_002','2025-10-02 23:59:59','Activo'),
+(3,'tok_cliente1_003','2025-10-01 18:00:00','Expirado'),
+(4,'tok_cliente1_004','2025-10-03 23:59:59','Activo');

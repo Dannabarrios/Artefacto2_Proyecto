@@ -235,3 +235,13 @@ CREATE TABLE Configuracion_Idioma (
     fechaDeteccion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     comentario VARCHAR(255)          
 );
+
+CREATE TABLE TokenAcceso (
+    TokenID INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fechaExpiracion DATETIME NOT NULL,   
+    estado VARCHAR(50) DEFAULT 'Activo',
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
+);
