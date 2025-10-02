@@ -1,14 +1,35 @@
 CREATE DATABASE Renta_Movil;
 USE Renta_Movil;
 
+CREATE TABLE TipoAutenticacion (
+    idTipoAutenticacion INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE EstadoReserva (
+    idEstadoReserva INT AUTO_INCREMENT PRIMARY KEY,
+    nombreEstado VARCHAR(50) UNIQUE NOT NULL -- Pendiente, Confirmada, Cancelada, Finalizada
+);
+
+CREATE TABLE EstadoVehiculo (
+    idEstadoVehiculo INT AUTO_INCREMENT PRIMARY KEY,
+    nombreEstado VARCHAR(50) UNIQUE NOT NULL -- Disponible, Reservado, En mantenimiento
+);
+
+CREATE TABLE EstadoPago (
+    idEstadoPago INT AUTO_INCREMENT PRIMARY KEY,
+    nombreEstado VARCHAR(50) UNIQUE NOT NULL -- Pendiente, Pagado, Fallido, Reembolsado
+);
+
 CREATE TABLE Usuarios (
     UsuarioID INT PRIMARY KEY AUTO_INCREMENT,
     NombreUsuario VARCHAR(255) NOT NULL,
     Contrasena VARCHAR(255) NOT NULL,
     EstadoUsuario BOOLEAN DEFAULT TRUE, 
-    TipoAutenticacion VARCHAR(50) NOT NULL, 
+    idTipoAutenticacion INT NOT NULL,
     FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UltimoAcceso TIMESTAMP NULL
+    UltimoAcceso TIMESTAMP NULL,
+    FOREIGN KEY (idTipoAutenticacion) REFERENCES TipoAutenticacion(idTipoAutenticacion)
 );
 
 CREATE TABLE Roles (
@@ -131,10 +152,12 @@ CREATE TABLE Vehiculo (
     tipoCombustible VARCHAR(50),
     capacidad INT,
     kilometraje INT,
-    estado VARCHAR(50) DEFAULT 'Disponible',
+    idEstadoVehiculo INT NOT NULL,
     fotoPrincipal LONGBLOB NULL,
+    urlFoto VARCHAR(255) NULL,
     FOREIGN KEY (idEmpresa) REFERENCES Empresa(idEmpresa),
-    FOREIGN KEY (idCategoria) REFERENCES CategoriaVehiculo(idCategoria)
+    FOREIGN KEY (idCategoria) REFERENCES CategoriaVehiculo(idCategoria),
+    FOREIGN KEY (idEstadoVehiculo) REFERENCES EstadoVehiculo(idEstadoVehiculo)
 );
 
 CREATE TABLE DocumentoVehiculo (
@@ -166,9 +189,10 @@ CREATE TABLE Reserva (
     fechaReserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fechaInicio DATE NOT NULL,
     fechaFin DATE NOT NULL,
-    estado VARCHAR(50) DEFAULT 'Pendiente', -- Pendiente, Confirmada, Cancelada, Finalizada
+    idEstadoReserva INT NOT NULL,
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
-    FOREIGN KEY (idVehiculo) REFERENCES Vehiculo(idVehiculo)
+    FOREIGN KEY (idVehiculo) REFERENCES Vehiculo(idVehiculo),
+    FOREIGN KEY (idEstadoReserva) REFERENCES EstadoReserva(idEstadoReserva)
 );
 
 CREATE TABLE Contrato (
@@ -193,10 +217,11 @@ CREATE TABLE Pago (
     idMetodoPago INT NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
     fechaPago TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado VARCHAR(50) DEFAULT 'Pendiente', -- Pendiente, Pagado, Fallido, Reembolsado
+    idEstadoPago INT NOT NULL,
     referenciaTransaccion VARCHAR(100), 
     FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva),
-    FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
+    FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago),
+    FOREIGN KEY (idEstadoPago) REFERENCES EstadoPago(idEstadoPago)
 );
 
 CREATE TABLE ReporteMantenimiento (
@@ -250,7 +275,7 @@ CREATE TABLE CalificacionServicio (
     puntuacion INT CHECK(puntuacion BETWEEN 1 AND 5),
     comentario TEXT,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (UsuarioID, idReserva), -- evita calificaciones duplicadas
+    UNIQUE (UsuarioID, idReserva),
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
     FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva)
 );
