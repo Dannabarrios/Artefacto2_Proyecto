@@ -1,41 +1,39 @@
 USE Renta_Movil;
 
--- Este indice sirve para buscar usuarios rapidamente por su nombre
-CREATE INDEX ind_usuarios_nombreusuario
-    ON Usuarios (NombreUsuario);
+-- Vehiculos: consultas frecuentes por precio, marca y modelo
+CREATE INDEX vehiculo_precioDia_idx ON Vehiculo(precioDia);
+CREATE INDEX vehiculo_marca_idx ON Vehiculo(marca);
+CREATE INDEX vehiculo_modelo_idx ON Vehiculo(modelo);
 
--- Este indice sirve para acelerar las consultas por Rol dentro de la tabla de relacion Usuario_Rol
-CREATE INDEX ind_usuario_rol_rolid
-    ON Usuario_Rol (RolID);
+-- Reservas: filtrar por estado y fechas
+CREATE INDEX reserva_estado_idx ON Reserva(idEstadoReserva);
+CREATE INDEX reserva_fechas_idx ON Reserva(fechaInicio, fechaFin);
 
--- Este indice sirve para filtrar vehiculos segun su estado (por ejemplo Disponible)
-CREATE INDEX ind_vehiculo_estado
-    ON Vehiculo (estado);
+-- Pagos: consultas rapidas por estado y referencia
+CREATE INDEX pago_estado_idx ON Pago(idEstadoPago);
+CREATE UNIQUE INDEX pago_referencia_idx ON Pago(referenciaTransaccion);
 
--- Este indice sirve para mejorar joins y busquedas por placa de vehiculo
-CREATE INDEX ind_vehiculo_placa
-    ON Vehiculo (placa);
+-- Usuarios: busqueda rapida por nombre
+CREATE INDEX usuario_nombre_idx ON Usuarios(NombreUsuario);
 
--- Este indice sirve para filtrar reservas por usuario y por rango de fechas
-CREATE INDEX ind_reserva_usuario_fecha
-    ON Reserva (UsuarioID, fechaInicio, fechaFin);
+-- PerfilUsuario: busqueda rapida por documento y correo
+CREATE UNIQUE INDEX perfil_numeroDocumento_idx ON PerfilUsuario(numeroDocumento);
+CREATE UNIQUE INDEX perfil_correo_idx ON PerfilUsuario(correo);
 
--- Este indice sirve para buscar pagos por reserva y por estado
-CREATE INDEX ind_pago_reserva_estado
-    ON Pago (idReserva, estado);
+-- Vehiculo: busqueda rapida por placa
+CREATE UNIQUE INDEX vehiculo_placa_idx ON Vehiculo(placa);
 
--- Este indice sirve para consultar reportes de mantenimiento por vehiculo y por estado
-CREATE INDEX ind_reporte_mantenimiento_vehiculo_estado
-    ON ReporteMantenimiento (idVehiculo, estado);
+-- Empresa: busqueda rapida por NIT
+CREATE UNIQUE INDEX empresa_nit_idx ON Empresa(nit);
 
--- Este indice sirve para encontrar rapidamente las sesiones activas de un usuario
-CREATE INDEX ind_sesion_usuario_estado
-    ON Sesion_Usuario (UsuarioID, EstadoSesion);
+-- DocumentoVehiculo: busqueda rapida por numero de documento
+CREATE INDEX docvehiculo_numeroDocumento_idx ON DocumentoVehiculo(numeroDocumento);
 
--- Este indice sirve para revisar la auditoria de acciones por usuario y por fecha
-CREATE INDEX ind_auditoria_usuario_fecha
-    ON Auditoria (UsuarioID, Fecha);
+-- DocumentoUsuario: busqueda rapida por numero de documento
+CREATE INDEX docusuario_numeroDocumento_idx ON DocumentoUsuario(numeroDocumento);
 
--- Este indice sirve para ubicar el contrato correspondiente a una reserva especifica
-CREATE INDEX ind_contrato_reserva
-    ON Contrato (idReserva);
+-- TokenAcceso: busquedas rapidas por token
+CREATE UNIQUE INDEX tokenacceso_token_idx ON TokenAcceso(token);
+
+-- ReportesGenerados: busquedas por tipo y formato
+CREATE INDEX reportes_tipoFormato_idx ON ReportesGenerados(tipoReporte, formato);

@@ -1,122 +1,117 @@
 USE Renta_Movil;
 
+-- Validar inicio de sesión
 DELIMITER //
-CREATE PROCEDURE RegistrarUsuario(
-    IN pNombreUsuario VARCHAR(255),
-    IN pContrasena    VARCHAR(255),
-    IN pTipoAuth      VARCHAR(50)
+CREATE PROCEDURE sp_loginUsuario (
+    IN p_NombreUsuario VARCHAR(255),
+    IN p_Contrasena VARCHAR(255)
 )
 BEGIN
-    INSERT INTO Usuarios (NombreUsuario, Contraseña, TipoAutenticacion)
-    VALUES (pNombreUsuario, pContrasena, pTipoAuth);
+    SELECT UsuarioID, NombreUsuario, EstadoUsuario, idTipoAutenticacion
+    FROM Usuarios
+    WHERE NombreUsuario = p_NombreUsuario
+      AND Contrasena = p_Contrasena
+      AND EstadoUsuario = TRUE;
 END //
 DELIMITER ;
 
+-- Cambiar contraseña de usuario
 DELIMITER //
-CREATE PROCEDURE CambiarContrasena(
-    IN pUsuarioID INT,
-    IN pNuevaContrasena VARCHAR(255)
+CREATE PROCEDURE sp_cambiarContrasena (
+    IN p_UsuarioID INT,
+    IN p_NuevaContrasena VARCHAR(255)
 )
 BEGIN
     UPDATE Usuarios
-       SET Contraseña = pNuevaContrasena
-     WHERE UsuarioID = pUsuarioID;
+    SET Contrasena = p_NuevaContrasena
+    WHERE UsuarioID = p_UsuarioID;
 END //
 DELIMITER ;
 
+-- Consultar vehículos disponibles por rango de fechas
 DELIMITER //
-CREATE PROCEDURE AsignarRolUsuario(
-    IN pUsuarioID INT,
-    IN pRolID INT
+CREATE PROCEDURE sp_vehiculosDisponibles (
+    IN p_FechaInicio DATE,
+    IN p_FechaFin DATE
 )
 BEGIN
-    INSERT INTO Usuario_Rol (UsuarioID, RolID)
-    VALUES (pUsuarioID, pRolID);
+    SELECT v.idVehiculo, v.marca, v.modelo, v.precioDia, v.urlFoto
+    FROM Vehiculo v
+    WHERE v.idEstadoVehiculo = 1
+      AND v.idVehiculo NOT IN (
+        SELECT r.idVehiculo
+        FROM Reserva r
+        WHERE (p_FechaInicio BETWEEN r.fechaInicio AND r.fechaFin)
+           OR (p_FechaFin BETWEEN r.fechaInicio AND r.fechaFin)
+           OR (r.fechaInicio BETWEEN p_FechaInicio AND p_FechaFin)
+      );
 END //
 DELIMITER ;
 
+-- Crear nueva reserva
 DELIMITER //
-CREATE PROCEDURE CrearReserva(
-    IN pUsuarioID INT,
-    IN pVehiculoID INT,
-    IN pFechaInicio DATE,
-    IN pFechaFin DATE
+CREATE PROCEDURE sp_crearReserva (
+    IN p_UsuarioID INT,
+    IN p_idVehiculo INT,
+    IN p_FechaInicio DATE,
+    IN p_FechaFin DATE
 )
 BEGIN
-    INSERT INTO Reserva (UsuarioID, idVehiculo, fechaInicio, fechaFin, estado)
-    VALUES (pUsuarioID, pVehiculoID, pFechaInicio, pFechaFin, 'Pendiente');
+    INSERT INTO Reserva (UsuarioID, idVehiculo, fechaInicio, fechaFin, idEstadoReserva)
+    VALUES (p_UsuarioID, p_idVehiculo, p_FechaInicio, p_FechaFin, 1); -- 1 = Pendiente
 END //
 DELIMITER ;
 
+-- Cancelar reserva
 DELIMITER //
-CREATE PROCEDURE ActualizarEstadoReserva(
-    IN pReservaID INT,
-    IN pNuevoEstado VARCHAR(50)
+CREATE PROCEDURE sp_cancelarReserva (
+    IN p_idReserva INT
 )
 BEGIN
     UPDATE Reserva
-       SET estado = pNuevoEstado
-     WHERE idReserva = pReservaID;
+    SET idEstadoReserva = 3 
+    WHERE idReserva = p_idReserva;
 END //
 DELIMITER ;
 
+-- Obtener historial de reservas por usuario
 DELIMITER //
-CREATE PROCEDURE GenerarContrato(
-    IN pReservaID INT,
-    IN pRutaPDF VARCHAR(255),
-    IN pCondiciones TEXT
+CREATE PROCEDURE sp_historialReservasUsuario (
+    IN p_UsuarioID INT
 )
 BEGIN
-    INSERT INTO Contrato (idReserva, rutaPDF, condiciones)
-    VALUES (pReservaID, pRutaPDF, pCondiciones);
+    SELECT r.idReserva, v.marca, v.modelo, r.fechaInicio, r.fechaFin, er.nombreEstado
+    FROM Reserva r
+    INNER JOIN Vehiculo v ON r.idVehiculo = v.idVehiculo
+    INNER JOIN EstadoReserva er ON r.idEstadoReserva = er.idEstadoReserva
+    WHERE r.UsuarioID = p_UsuarioID
+    ORDER BY r.fechaReserva DESC;
 END //
 DELIMITER ;
 
+-- Registrar un pago
 DELIMITER //
-CREATE PROCEDURE RegistrarPago(
-    IN pReservaID INT,
-    IN pMetodoPago INT,
-    IN pMonto DECIMAL(10,2)
+CREATE PROCEDURE sp_registrarPago (
+    IN p_idReserva INT,
+    IN p_idMetodoPago INT,
+    IN p_monto DECIMAL(10,2),
+    IN p_referencia VARCHAR(100)
 )
 BEGIN
-    INSERT INTO Pago (idReserva, idMetodoPago, monto, estado)
-    VALUES (pReservaID, pMetodoPago, pMonto, 'Pendiente');
+    INSERT INTO Pago (idReserva, idMetodoPago, monto, idEstadoPago, referenciaTransaccion)
+    VALUES (p_idReserva, p_idMetodoPago, p_monto, 1, p_referencia); -- 1 = Pendiente
 END //
 DELIMITER ;
 
+-- Actualizar estado de pago
 DELIMITER //
-CREATE PROCEDURE ReportarMantenimiento(
-    IN pVehiculoID INT,
-    IN pDescripcion TEXT,
-    IN pBloqueo BOOLEAN
+CREATE PROCEDURE sp_actualizarEstadoPago (
+    IN p_idPago INT,
+    IN p_idEstadoPago INT
 )
 BEGIN
-    INSERT INTO ReporteMantenimiento (idVehiculo, descripcion, bloqueo, estado)
-    VALUES (pVehiculoID, pDescripcion, pBloqueo, 'Pendiente');
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE VehiculosDisponiblesPorCategoria(
-    IN pCategoriaID INT
-)
-BEGIN
-    SELECT v.idVehiculo, v.placa, v.marca, v.modelo, v.color, v.precioDia
-      FROM Vehiculo v
-     WHERE v.idCategoria = pCategoriaID
-       AND v.estado = 'Disponible';
-END //
-DELIMITER ;
-
-DELIMITER //
-CREATE PROCEDURE ReservasActivasUsuario(
-    IN pUsuarioID INT
-)
-BEGIN
-    SELECT r.idReserva, v.placa, v.marca, r.fechaInicio, r.fechaFin, r.estado
-      FROM Reserva r
-      JOIN Vehiculo v ON r.idVehiculo = v.idVehiculo
-     WHERE r.UsuarioID = pUsuarioID
-       AND r.estado IN ('Pendiente','Confirmada');
+    UPDATE Pago
+    SET idEstadoPago = p_idEstadoPago
+    WHERE idPago = p_idPago;
 END //
 DELIMITER ;

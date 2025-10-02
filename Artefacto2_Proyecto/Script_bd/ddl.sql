@@ -166,7 +166,7 @@ CREATE TABLE Reserva (
     fechaReserva TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fechaInicio DATE NOT NULL,
     fechaFin DATE NOT NULL,
-    estado VARCHAR(50) DEFAULT 'Pendiente',
+    estado VARCHAR(50) DEFAULT 'Pendiente', -- Pendiente, Confirmada, Cancelada, Finalizada
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
     FOREIGN KEY (idVehiculo) REFERENCES Vehiculo(idVehiculo)
 );
@@ -176,6 +176,7 @@ CREATE TABLE Contrato (
     idReserva INT UNIQUE NOT NULL,
     rutaPDF VARCHAR(255) NOT NULL,
     condiciones TEXT NOT NULL, 
+    firmaDigital VARCHAR(255), 
     fechaGeneracion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva)
 );
@@ -192,7 +193,8 @@ CREATE TABLE Pago (
     idMetodoPago INT NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
     fechaPago TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    estado VARCHAR(50) DEFAULT 'Pendiente',
+    estado VARCHAR(50) DEFAULT 'Pendiente', -- Pendiente, Pagado, Fallido, Reembolsado
+    referenciaTransaccion VARCHAR(100), 
     FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva),
     FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
 );
@@ -216,6 +218,41 @@ CREATE TABLE Notificacion (
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado VARCHAR(50) DEFAULT 'No leido',
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
+);
+
+CREATE TABLE BuzonQuejas (
+    idQueja INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    idReserva INT NULL, 
+    tipoQueja VARCHAR(100) NOT NULL, 
+    descripcion TEXT NOT NULL,
+    fechaRegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado VARCHAR(50) DEFAULT 'Pendiente', 
+    respuesta TEXT NULL, 
+    fechaRespuesta TIMESTAMP NULL,
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
+    FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva)
+);
+
+CREATE TABLE EvidenciaQueja (
+    idEvidencia INT AUTO_INCREMENT PRIMARY KEY,
+    idQueja INT NOT NULL,
+    rutaArchivo VARCHAR(255) NOT NULL,
+    tipoArchivo VARCHAR(50),
+    fechaSubida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (idQueja) REFERENCES BuzonQuejas(idQueja)
+);
+
+CREATE TABLE CalificacionServicio (
+    idCalificacion INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    idReserva INT NOT NULL,
+    puntuacion INT CHECK(puntuacion BETWEEN 1 AND 5),
+    comentario TEXT,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (UsuarioID, idReserva), -- evita calificaciones duplicadas
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID),
+    FOREIGN KEY (idReserva) REFERENCES Reserva(idReserva)
 );
 
 CREATE TABLE RecuperacionCuenta (
@@ -243,5 +280,16 @@ CREATE TABLE TokenAcceso (
     fechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fechaExpiracion DATETIME NOT NULL,   
     estado VARCHAR(50) DEFAULT 'Activo',
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
+);
+
+CREATE TABLE ReportesGenerados (
+    idReporteGen INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioID INT NOT NULL,
+    tipoReporte VARCHAR(100) NOT NULL, -- Vehículos, Reservas, Pagos, Mantenimientos
+    formato VARCHAR(20) NOT NULL,      -- PDF o Excel
+    parametros TEXT,                  
+    rutaArchivo VARCHAR(255) NOT NULL,
+    fechaGeneracion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
 );

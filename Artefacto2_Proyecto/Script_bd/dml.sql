@@ -1,145 +1,183 @@
 USE Renta_Movil;
 
-INSERT INTO Usuarios (NombreUsuario, Contrasena, EstadoUsuario, TipoAutenticacion) VALUES
-('laura', 'pass123', TRUE, 'Local'),
-('vanessa', 'pass234', TRUE, 'Local'),
-('danna', 'pass345', TRUE, 'Google'),
-('camilo', 'pass456', TRUE, 'Local');
+INSERT INTO TipoAutenticacion (nombre) VALUES
+('Local'), ('Google'), ('Facebook'), ('Microsoft');
+
+INSERT INTO EstadoReserva (nombreEstado) VALUES
+('Pendiente'), ('Confirmada'), ('Cancelada'), ('Finalizada');
+
+INSERT INTO EstadoVehiculo (nombreEstado) VALUES
+('Disponible'), ('Reservado'), ('En mantenimiento'), ('Fuera de servicio');
+
+INSERT INTO EstadoPago (nombreEstado) VALUES
+('Pendiente'), ('Pagado'), ('Fallido'), ('Reembolsado');
+
+INSERT INTO Usuarios (NombreUsuario, Contrasena, EstadoUsuario, idTipoAutenticacion)
+VALUES
+('laura_p', '1234hash', TRUE, 1),
+('juan_m', 'abcdhash', TRUE, 1),
+('maria_g', 'passhash', TRUE, 2),
+('carlos_r', 'securehash', FALSE, 3);
 
 INSERT INTO Roles (NombreRol, Descripcion) VALUES
-('Administrador', 'Acceso total'),
-('Cliente', 'Usuario cliente'),
-('Operador', 'Gestion de reservas'),
-('Soporte', 'Atencion de soporte');
+('Administrador', 'Gestión total del sistema'),
+('Cliente', 'Puede realizar reservas y pagos'),
+('Operador', 'Gestiona vehículos y reportes'),
+('Soporte', 'Atiende quejas y notificaciones');
 
 INSERT INTO Usuario_Rol (UsuarioID, RolID) VALUES
-(1,1),(2,2),(3,2),(4,3);
+(1, 1), (2, 2), (3, 2), (4, 3);
 
 INSERT INTO Permisos (NombrePermiso, Descripcion) VALUES
-('CrearUsuario','Puede crear usuarios'),
-('EditarUsuario','Puede editar usuarios'),
-('EliminarUsuario','Puede eliminar usuarios'),
-('VerReportes','Puede ver reportes');
+('CrearUsuario', 'Permite registrar usuarios'),
+('GestionarVehiculos', 'Alta, baja y edición de vehículos'),
+('GestionarPagos', 'Procesar y revisar pagos'),
+('GenerarReportes', 'Acceso a reportes PDF/Excel');
 
 INSERT INTO Rol_Permiso (RolID, PermisoID) VALUES
-(1,1),(1,2),(1,3),(1,4);
+(1, 1), (1, 2), (1, 3), (1, 4);
 
 INSERT INTO Auditoria (UsuarioID, Accion, Descripcion, IP_Origen, Aplicacion) VALUES
-(1,'Login','Inicio de sesion','192.168.1.1','Web'),
-(2,'Reserva','Creo una reserva','192.168.1.2','Movil'),
-(3,'Pago','Realizo un pago','192.168.1.3','Web'),
-(4,'Logout','Cerro sesion','192.168.1.4','Web');
+(1, 'Login', 'Inicio de sesión exitoso', '192.168.1.10', 'Web'),
+(2, 'Reserva', 'Reserva de vehículo confirmada', '192.168.1.15', 'Web'),
+(3, 'Pago', 'Pago rechazado', '192.168.1.20', 'App'),
+(4, 'Logout', 'Cierre de sesión', '192.168.1.25', 'Web');
 
 INSERT INTO Configuracion_Seguridad (NombreConfiguracion, ValorConfiguracion, Descripcion) VALUES
-('IntentosMaximos','5','Maximo intentos de login'),
-('TiempoSesion','30','Duracion de sesion en minutos'),
-('BloqueoIP','1','Bloqueo por intentos fallidos'),
-('AlertaEmail','1','Envia alerta de seguridad');
+('MaxIntentos', '5', 'Intentos fallidos antes de bloqueo'),
+('TiempoSesion', '30', 'Minutos de duración de sesión'),
+('CaptchaLogin', 'Activo', 'Captcha en inicio de sesión'),
+('2FA', 'Opcional', 'Autenticación de dos factores');
 
 INSERT INTO Sesion_Usuario (UsuarioID, FechaFin, IP_Origen, EstadoSesion) VALUES
-(1,NULL,'192.168.1.1','Activo'),
-(2,NULL,'192.168.1.2','Activo'),
-(3,NULL,'192.168.1.3','Activo'),
-(4,'2025-09-27 20:00:00','192.168.1.4','Cerrado');
+(1, NULL, '192.168.1.10', 'Activo'),
+(2, NULL, '192.168.1.15', 'Activo'),
+(3, NOW(), '192.168.1.20', 'Finalizado'),
+(4, NOW(), '192.168.1.25', 'Finalizado');
 
 INSERT INTO Log_Errores (UsuarioID, TipoError, Descripcion, IP_Origen) VALUES
-(1,'SQL','Error de consulta','192.168.1.1'),
-(2,'Conexion','Fallo de conexion','192.168.1.2'),
-(3,'Aplicacion','Error de aplicacion','192.168.1.3'),
-(4,'Autenticacion','Error de login','192.168.1.4');
+(1, 'DBError', 'Error de conexión', '192.168.1.10'),
+(2, 'AuthError', 'Contraseña inválida', '192.168.1.15'),
+(3, 'Timeout', 'Sesión expirada', '192.168.1.20'),
+(4, 'AppCrash', 'Error inesperado en la app', '192.168.1.25');
 
 INSERT INTO Politicas_Contrasenas (MinLongitud, MaxLongitud, RequiereMayusculas, RequiereNumeros, RequiereSimbolos, CaducidadDias) VALUES
-(8,20,TRUE,TRUE,TRUE,90),
-(10,25,TRUE,TRUE,FALSE,120),
-(12,30,TRUE,FALSE,TRUE,180),
-(8,16,FALSE,TRUE,FALSE,60);
+(8, 20, TRUE, TRUE, TRUE, 90),
+(10, 25, TRUE, TRUE, FALSE, 60),
+(6, 15, FALSE, TRUE, FALSE, 30),
+(12, 30, TRUE, TRUE, TRUE, 120);
 
 INSERT INTO Empresa (nombre, nit, direccion, telefono, correo, estado) VALUES
-('AutoRent','900123001','Calle 10 20-30','3001111111','info@autorent.com','Activa'),
-('CarGo','900123002','Carrera 5 15-25','3002222222','info@cargo.com','Activa'),
-('MovilRent','900123003','Avenida 7 12-45','3003333333','info@movilrent.com','Activa'),
-('CityCar','900123004','Calle 8 14-10','3004444444','info@citycar.com','Activa');
+('RentaCar SAS', '900123456', 'Cra 10 #20-30 Bogotá', '3101234567', 'contacto@rentacar.com', 'Activa'),
+('MovilRent LTDA', '901987654', 'Av 15 #45-12 Medellín', '3119876543', 'info@movilrent.com', 'Activa'),
+('AutoExpress', '902555333', 'Calle 50 #70-15 Cali', '3125553332', 'ventas@autoexpress.com', 'Activa'),
+('CityCars', '903444222', 'Carrera 8 #12-45 Barranquilla', '3134442221', 'citycars@outlook.com', 'Inactiva');
 
-INSERT INTO PerfilUsuario (UsuarioID, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono, estado) VALUES
-(1,'Laura','Martinez','CC','100100100','laura@mail.com','3101111111','Activo'),
-(2,'Vanessa','Gomez','CC','100200200','vanessa@mail.com','3102222222','Activo'),
-(3,'Danna','Perez','CC','100300300','danna@mail.com','3103333333','Activo'),
-(4,'Camilo','Lopez','CC','100400400','camilo@mail.com','3104444444','Activo');
+INSERT INTO PerfilUsuario (UsuarioID, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono) VALUES
+(1, 'Laura', 'Pérez', 'CC', '1075228306', 'laura@gmail.com', '3201112233'),
+(2, 'Juan', 'Martínez', 'CC', '1075228307', 'juan@gmail.com', '3201112244'),
+(3, 'María', 'Gómez', 'CC', '1075228308', 'maria@gmail.com', '3201112255'),
+(4, 'Carlos', 'Ramírez', 'TI', '1075228309', 'carlos@gmail.com', '3201112266');
 
 INSERT INTO CategoriaVehiculo (nombre, descripcion) VALUES
-('Sedan','Vehiculo tipo sedan'),
-('SUV','Vehiculo deportivo utilitario'),
-('Hatchback','Vehiculo compacto'),
-('Pickup','Camioneta de carga');
+('Económico', 'Vehículos pequeños y económicos'),
+('SUV', 'Vehículos familiares y robustos'),
+('Lujo', 'Vehículos de alta gama'),
+('Pickup', 'Camionetas de carga ligera');
 
-INSERT INTO Vehiculo (idEmpresa, idCategoria, placa, marca, modelo, color, precioDia, tipoTransmision, tipoCombustible, capacidad, kilometraje, estado) VALUES
-(1,1,'ABC123','Toyota','Corolla','Rojo',150.00,'Automatica','Gasolina',5,30000,'Disponible'),
-(2,2,'DEF456','Mazda','CX5','Negro',200.00,'Automatica','Diesel',5,25000,'Disponible'),
-(3,3,'GHI789','Kia','Rio','Blanco',120.00,'Manual','Gasolina',5,40000,'Disponible'),
-(4,4,'JKL012','Ford','Ranger','Gris',220.00,'Automatica','Diesel',4,35000,'Disponible');
+INSERT INTO Vehiculo (idEmpresa, idCategoria, placa, marca, modelo, color, precioDia, tipoTransmision, tipoCombustible, capacidad, kilometraje, idEstadoVehiculo, urlFoto)
+VALUES
+(1, 1, 'ABC123', 'Chevrolet', 'Spark GT', 'Rojo', 120000, 'Manual', 'Gasolina', 5, 45000, 1, 'spark.jpg'),
+(2, 2, 'XYZ987', 'Toyota', 'Prado', 'Blanco', 350000, 'Automática', 'Diesel', 7, 60000, 1, 'prado.jpg'),
+(3, 3, 'JKL456', 'BMW', 'Serie 5', 'Negro', 500000, 'Automática', 'Gasolina', 5, 30000, 1, 'bmw.jpg'),
+(4, 4, 'MNO789', 'Ford', 'Ranger', 'Azul', 280000, 'Manual', 'Diesel', 5, 75000, 2, 'ranger.jpg');
 
 INSERT INTO DocumentoVehiculo (idVehiculo, tipoDocumento, numeroDocumento, fechaEmision, fechaVencimiento, rutaArchivo, estado) VALUES
-(1,'SOAT','SOAT001','2025-01-01','2026-01-01','/docs/soat1.pdf','Vigente'),
-(2,'SOAT','SOAT002','2025-01-01','2026-01-01','/docs/soat2.pdf','Vigente'),
-(3,'SOAT','SOAT003','2025-01-01','2026-01-01','/docs/soat3.pdf','Vigente'),
-(4,'SOAT','SOAT004','2025-01-01','2026-01-01','/docs/soat4.pdf','Vigente');
+(1, 'SOAT', 'SOAT123', '2025-01-01', '2026-01-01', 'soat_spark.pdf', 'Vigente'),
+(2, 'Tecnomecánica', 'TEC987', '2025-02-01', '2026-02-01', 'tec_prado.pdf', 'Vigente'),
+(3, 'SOAT', 'SOAT456', '2025-03-01', '2026-03-01', 'soat_bmw.pdf', 'Vigente'),
+(4, 'Tecnomecánica', 'TEC789', '2025-04-01', '2026-04-01', 'tec_ranger.pdf', 'Vigente');
 
 INSERT INTO DocumentoUsuario (idPerfil, tipoDocumento, numeroDocumento, fechaVencimiento, rutaArchivo) VALUES
-(1,'Licencia','LIC001','2026-01-01','/docs/lic1.pdf'),
-(2,'Licencia','LIC002','2026-01-01','/docs/lic2.pdf'),
-(3,'Licencia','LIC003','2026-01-01','/docs/lic3.pdf'),
-(4,'Licencia','LIC004','2026-01-01','/docs/lic4.pdf');
+(1, 'Licencia Conducción', 'LIC123', '2027-01-01', 'licencia_laura.pdf'),
+(2, 'Licencia Conducción', 'LIC456', '2027-02-01', 'licencia_juan.pdf'),
+(3, 'Licencia Conducción', 'LIC789', '2027-03-01', 'licencia_maria.pdf'),
+(4, 'Licencia Conducción', 'LIC321', '2027-04-01', 'licencia_carlos.pdf');
 
-INSERT INTO Reserva (UsuarioID, idVehiculo, fechaInicio, fechaFin, estado) VALUES
-(1,1,'2025-09-25','2025-09-28','Pendiente'),
-(2,2,'2025-09-26','2025-09-29','Pendiente'),
-(3,3,'2025-09-27','2025-09-30','Pendiente'),
-(4,4,'2025-09-28','2025-10-01','Pendiente');
+INSERT INTO Reserva (UsuarioID, idVehiculo, fechaInicio, fechaFin, idEstadoReserva) VALUES
+(1, 1, '2025-10-05', '2025-10-10', 2),
+(2, 2, '2025-10-06', '2025-10-12', 1),
+(3, 3, '2025-10-07', '2025-10-09', 4),
+(4, 4, '2025-10-08', '2025-10-15', 3);
 
-INSERT INTO Contrato (idReserva, rutaPDF, condiciones) VALUES
-(1,'/contratos/contrato1.pdf','Condiciones generales 1'),
-(2,'/contratos/contrato2.pdf','Condiciones generales 2'),
-(3,'/contratos/contrato3.pdf','Condiciones generales 3'),
-(4,'/contratos/contrato4.pdf','Condiciones generales 4');
+INSERT INTO Contrato (idReserva, rutaPDF, condiciones, firmaDigital) VALUES
+(1, 'contrato1.pdf', 'Condiciones estándar', 'firma1.png'),
+(2, 'contrato2.pdf', 'Condiciones estándar', 'firma2.png'),
+(3, 'contrato3.pdf', 'Condiciones estándar', 'firma3.png'),
+(4, 'contrato4.pdf', 'Condiciones estándar', 'firma4.png');
 
 INSERT INTO MetodoPago (nombre, descripcion) VALUES
-('PSE','Pago en linea'),
-('TarjetaCredito','Pago con tarjeta de credito'),
-('Efectivo','Pago en efectivo'),
-('Transferencia','Pago por transferencia');
+('Tarjeta Crédito', 'Pago con tarjeta VISA/MC'),
+('Tarjeta Débito', 'Pago con tarjeta débito'),
+('Efectivo', 'Pago en efectivo en oficina'),
+('Transferencia', 'Pago vía transferencia bancaria');
 
-INSERT INTO Pago (idReserva, idMetodoPago, monto, estado) VALUES
-(1,1,450.00,'Pendiente'),
-(2,2,600.00,'Pendiente'),
-(3,3,360.00,'Pendiente'),
-(4,4,660.00,'Pendiente');
+INSERT INTO Pago (idReserva, idMetodoPago, monto, idEstadoPago, referenciaTransaccion) VALUES
+(1, 1, 600000, 2, 'TXN123'),
+(2, 2, 2100000, 1, 'TXN456'),
+(3, 3, 1000000, 2, 'TXN789'),
+(4, 4, 1960000, 3, 'TXN321');
 
-INSERT INTO ReporteMantenimiento (idVehiculo, idReserva, descripcion, bloqueo, estado) VALUES
-(1,1,'Revision de frenos',FALSE,'Pendiente'),
-(2,2,'Cambio de aceite',FALSE,'Pendiente'),
-(3,3,'Revision de llantas',FALSE,'Pendiente'),
-(4,4,'Cambio de bateria',FALSE,'Pendiente');
+INSERT INTO ReporteMantenimiento (idVehiculo, descripcion, estado) VALUES
+(1, 'Cambio de aceite', 'Pendiente'),
+(2, 'Revisión frenos', 'Pendiente'),
+(3, 'Cambio llantas', 'Pendiente'),
+(4, 'Mantenimiento general', 'Pendiente');
 
 INSERT INTO Notificacion (UsuarioID, mensaje, estado) VALUES
-(1,'Su reserva ha sido creada','No leido'),
-(2,'Su reserva ha sido creada','No leido'),
-(3,'Su reserva ha sido creada','No leido'),
-(4,'Su reserva ha sido creada','No leido');
+(1, 'Su reserva ha sido confirmada', 'No leido'),
+(2, 'Su pago está en proceso', 'No leido'),
+(3, 'Su vehículo ya está disponible', 'Leido'),
+(4, 'Se ha generado un nuevo contrato', 'No leido');
+
+INSERT INTO BuzonQuejas (UsuarioID, idReserva, tipoQueja, descripcion, estado) VALUES
+(1, 1, 'Vehículo', 'El carro no estaba limpio', 'Pendiente'),
+(2, 2, 'Pago', 'Error en la transacción', 'Pendiente'),
+(3, 3, 'Atención', 'Demora en entrega del vehículo', 'Pendiente'),
+(4, 4, 'Contrato', 'Condiciones poco claras', 'Pendiente');
+
+INSERT INTO EvidenciaQueja (idQueja, rutaArchivo, tipoArchivo) VALUES
+(1, 'foto1.jpg', 'imagen'),
+(2, 'captura_pago.png', 'imagen'),
+(3, 'video_entrega.mp4', 'video'),
+(4, 'documento.pdf', 'pdf');
+
+INSERT INTO CalificacionServicio (UsuarioID, idReserva, puntuacion, comentario) VALUES
+(1, 1, 5, 'Excelente servicio'),
+(2, 2, 4, 'Buen carro, algo costoso'),
+(3, 3, 3, 'Regular experiencia'),
+(4, 4, 2, 'No cumplió expectativas');
 
 INSERT INTO RecuperacionCuenta (UsuarioID, codigo, estado, intentos) VALUES
-(1,'ABC111','Activo',0),
-(2,'ABC222','Activo',0),
-(3,'ABC333','Activo',0),
-(4,'ABC444','Activo',0);
+(1, 'ABC123', 'Activo', 0),
+(2, 'DEF456', 'Activo', 1),
+(3, 'GHI789', 'Expirado', 2),
+(4, 'JKL012', 'Activo', 0);
 
-INSERT INTO Configuracion_Idioma (idiomaDetectado, fuenteDeteccion, comentario) VALUES
-('es-ES','Navegador','Configuracion inicial'),
-('en-US','Geolocalizacion','Configuracion inicial'),
-('fr-FR','Navegador','Configuracion inicial'),
-('de-DE','Geolocalizacion','Configuracion inicial');
+INSERT INTO Configuracion_Idioma (idiomaDetectado, comentario) VALUES
+('Español', 'Detectado en navegador Chrome'),
+('Inglés', 'Detectado en navegador Edge'),
+('Francés', 'Detectado en navegador Firefox'),
+('Portugués', 'Detectado en app móvil');
 
 INSERT INTO TokenAcceso (UsuarioID, token, fechaExpiracion, estado) VALUES
-(1,'tok_admin_001','2025-10-01 23:59:59','Activo'),
-(2,'tok_empleado_002','2025-10-02 23:59:59','Activo'),
-(3,'tok_cliente1_003','2025-10-01 18:00:00','Expirado'),
-(4,'tok_cliente1_004','2025-10-03 23:59:59','Activo');
+(1, 'token123', '2025-12-31 23:59:59', 'Activo'),
+(2, 'token456', '2025-11-30 23:59:59', 'Activo'),
+(3, 'token789', '2025-10-31 23:59:59', 'Inactivo'),
+(4, 'token012', '2025-09-30 23:59:59', 'Expirado');
+
+INSERT INTO ReportesGenerados (UsuarioID, tipoReporte, formato, parametros, rutaArchivo) VALUES
+(1, 'Vehículos', 'PDF', 'Filtro=Disponibles', 'reporte_vehiculos.pdf'),
+(2, 'Reservas', 'Excel', 'Fecha=2025-10', 'reporte_reservas.xlsx'),
+(3, 'Pagos', 'PDF', 'Estado=Pagados', 'reporte_pagos.pdf'),
+(4, 'Mantenimientos', 'Excel', 'Vehículo=Todos', 'reporte_mantenimientos.xlsx');
