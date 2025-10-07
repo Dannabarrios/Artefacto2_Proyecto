@@ -1,39 +1,19 @@
 USE Renta_Movil;
 
--- Vehiculos: consultas frecuentes por precio, marca y modelo
-CREATE INDEX vehiculo_precioDia_idx ON Vehiculo(precioDia);
-CREATE INDEX vehiculo_marca_idx ON Vehiculo(marca);
-CREATE INDEX vehiculo_modelo_idx ON Vehiculo(modelo);
+-- este indice sirve para buscar usuarios rapidamente por su correo (login principal)
+CREATE INDEX idx_usuario_correo ON Usuarios(Correo);
 
--- Reservas: filtrar por estado y fechas
-CREATE INDEX reserva_estado_idx ON Reserva(idEstadoReserva);
-CREATE INDEX reserva_fechas_idx ON Reserva(fechaInicio, fechaFin);
+-- este indice sirve para obtener reservas por usuario (historial de reservas)
+CREATE INDEX idx_reserva_usuario ON Reserva(UsuarioID);
 
--- Pagos: consultas rapidas por estado y referencia
-CREATE INDEX pago_estado_idx ON Pago(idEstadoPago);
-CREATE UNIQUE INDEX pago_referencia_idx ON Pago(referenciaTransaccion);
+-- este indice sirve para filtrar vehiculos por empresa (cuando se consulta flota de cada empresa)
+CREATE INDEX idx_vehiculo_empresa ON Vehiculo(idEmpresa);
 
--- Usuarios: busqueda rapida por nombre
-CREATE INDEX usuario_nombre_idx ON Usuarios(NombreUsuario);
+-- este indice sirve para consultar pagos por reserva 
+CREATE INDEX idx_pago_reserva ON Pago(idReserva);
 
--- PerfilUsuario: busqueda rapida por documento y correo
-CREATE UNIQUE INDEX perfil_numeroDocumento_idx ON PerfilUsuario(numeroDocumento);
-CREATE UNIQUE INDEX perfil_correo_idx ON PerfilUsuario(correo);
+-- este indice sirve para buscar reservas en un rango de fechas (disponibilidad de vehiculos)
+CREATE INDEX idx_reserva_fechas ON Reserva(fechaInicio, fechaFin);
 
--- Vehiculo: busqueda rapida por placa
-CREATE UNIQUE INDEX vehiculo_placa_idx ON Vehiculo(placa);
-
--- Empresa: busqueda rapida por NIT
-CREATE UNIQUE INDEX empresa_nit_idx ON Empresa(nit);
-
--- DocumentoVehiculo: busqueda rapida por numero de documento
-CREATE INDEX docvehiculo_numeroDocumento_idx ON DocumentoVehiculo(numeroDocumento);
-
--- DocumentoUsuario: busqueda rapida por numero de documento
-CREATE INDEX docusuario_numeroDocumento_idx ON DocumentoUsuario(numeroDocumento);
-
--- TokenAcceso: busquedas rapidas por token
-CREATE UNIQUE INDEX tokenacceso_token_idx ON TokenAcceso(token);
-
--- ReportesGenerados: busquedas por tipo y formato
-CREATE INDEX reportes_tipoFormato_idx ON ReportesGenerados(tipoReporte, formato);
+-- este indice sirve para identificar el estado de los vehiculos (disponible, reservado, mantenimiento)
+CREATE INDEX idx_vehiculo_estado ON Vehiculo(idEstadoVehiculo);

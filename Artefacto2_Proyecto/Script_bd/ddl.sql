@@ -23,8 +23,8 @@ CREATE TABLE EstadoPago (
 
 CREATE TABLE Usuarios (
     UsuarioID INT PRIMARY KEY AUTO_INCREMENT,
-    NombreUsuario VARCHAR(255) NOT NULL,
-    Contrasena VARCHAR(255) NOT NULL,
+    Correo VARCHAR(100) NOT NULL UNIQUE, -- Credencial principal de login
+    Contrasena VARCHAR(255) NOT NULL,    -- Guardar con hash (bcrypt recomendado)
     EstadoUsuario BOOLEAN DEFAULT TRUE, 
     idTipoAutenticacion INT NOT NULL,
     FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
